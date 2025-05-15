@@ -4,22 +4,32 @@ import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 
 export default function SearchButton({ updateJoke }) {
 
+    let [ error, setError ] = useState(false);
+
     let JOKE_URL = "https://official-joke-api.appspot.com/random_joke";
 
     let getNewJoke = async() => {
-        let response = await fetch(JOKE_URL);
-        let jsonResponse = await response.json();
-        let result = {
-            statement: jsonResponse.setup,
-            answer: jsonResponse.punchline,
+        try {
+            let response = await fetch(JOKE_URL);
+            let jsonResponse = await response.json();
+            let result = {
+                statement: jsonResponse.setup,
+                answer: jsonResponse.punchline,
+            };
+            // console.log(result);
+            return result;
+        } catch(err) {
+            throw err;
         };
-        // console.log(result);
-        return result;
     };
 
     let handleOnClick = async(event) => {
-        let newJoke = await getNewJoke();
-        updateJoke(newJoke);
+        try {
+            let newJoke = await getNewJoke();
+            updateJoke(newJoke);
+        } catch(err) {
+            setError(true);
+        };
     };
 
     return (
@@ -30,6 +40,7 @@ export default function SearchButton({ updateJoke }) {
             >
                 <EmojiEmotionsIcon />&nbsp;Get a Joke
             </Button>
+            {error && <p className="mt-2 text-red-500 text-sm">Some error occured!</p>}
         </div>
     );
 }
